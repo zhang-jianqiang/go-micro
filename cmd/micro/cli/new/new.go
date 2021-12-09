@@ -127,6 +127,9 @@ func createProject(ctx *cli.Context, pt string) error {
 			{"handler/" + name + ".go", tmpl.HandlerSRV},
 			{"main.go", tmpl.MainSRV},
 			{"proto/" + name + ".proto", tmpl.ProtoSRV},
+			{"domain/model/" + name + ".go", tmpl.ModelSRV},
+			{"domain/repository/" + name + "_repository.go", tmpl.RepositorySRV},
+			{"domain/service/" + name + "_data_service.go", tmpl.ServiceSRV},
 		}...)
 	default:
 		return fmt.Errorf("%s project type not supported", pt)

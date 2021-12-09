@@ -27,63 +27,20 @@ import (
 	"context"
 	"io"
 	"time"
+    "{{.Vendor}}{{.Service}}/domain/service"
 
 	log "go-micro.dev/v4/logger"
 
 	pb "{{.Vendor}}{{.Service}}/proto"
 )
 
-type {{title .Service}} struct{}
+type {{title .Service}} struct{
+	{{title .Service}}DataService service.I{{title .Service}}DataService
+}
 
-func (e *{{title .Service}}) Call(ctx context.Context, req *pb.CallRequest, rsp *pb.CallResponse) error {
+func (e *{{title .Service}}) FindOneById(ctx context.Context, req *pb.FindOneByIdRequest, rsp *pb.FindOneByIdRequestResponse) error {
 	log.Infof("Received {{title .Service}}.Call request: %v", req)
 	rsp.Msg = "Hello " + req.Name
 	return nil
-}
-
-func (e *{{title .Service}}) ClientStream(ctx context.Context, stream pb.{{title .Service}}_ClientStreamStream) error {
-	var count int64
-	for {
-		req, err := stream.Recv()
-		if err == io.EOF {
-			log.Infof("Got %v pings total", count)
-			return stream.SendMsg(&pb.ClientStreamResponse{Count: count})
-		}
-		if err != nil {
-			return err
-		}
-		log.Infof("Got ping %v", req.Stroke)
-		count++
-	}
-}
-
-func (e *{{title .Service}}) ServerStream(ctx context.Context, req *pb.ServerStreamRequest, stream pb.{{title .Service}}_ServerStreamStream) error {
-	log.Infof("Received {{title .Service}}.ServerStream request: %v", req)
-	for i := 0; i < int(req.Count); i++ {
-		log.Infof("Sending %d", i)
-		if err := stream.Send(&pb.ServerStreamResponse{
-			Count: int64(i),
-		}); err != nil {
-			return err
-		}
-		time.Sleep(time.Millisecond * 250)
-	}
-	return nil
-}
-
-func (e *{{title .Service}}) BidiStream(ctx context.Context, stream pb.{{title .Service}}_BidiStreamStream) error {
-	for {
-		req, err := stream.Recv()
-		if err == io.EOF {
-			return nil
-		}
-		if err != nil {
-			return err
-		}
-		log.Infof("Got ping %v", req.Stroke)
-		if err := stream.Send(&pb.BidiStreamResponse{Stroke: req.Stroke}); err != nil {
-			return err
-		}
-	}
 }
 `
